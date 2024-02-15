@@ -6,6 +6,14 @@ let activePage = 0;
 let lastPage;
 let snapshot;
 
+const options = {
+  method: 'GET',
+  headers: {
+    'X-RapidAPI-Key': '92cafd2032msh75252a91a66893ap1128bdjsn75fcdc8c70ba',
+    'X-RapidAPI-Host': 'coinranking1.p.rapidapi.com',
+  },
+};
+
 function init() {
   getAllCoins();
   getLastInRank();
@@ -17,14 +25,6 @@ async function getAllCoins() {
   const url = `https://coinranking1.p.rapidapi.com/coins?referenceCurrencyUuid=yhjMzLPhuIDl&timePeriod=24h&tiers%5B0%5D=1&orderBy=${orderByV}&orderDirection=${
     orderDirectionV ? 'asc' : 'desc'
   }&limit=${limitV}&offset=${offsetV}`;
-
-  const options = {
-    method: 'GET',
-    headers: {
-      'X-RapidAPI-Key': '92cafd2032msh75252a91a66893ap1128bdjsn75fcdc8c70ba',
-      'X-RapidAPI-Host': 'coinranking1.p.rapidapi.com',
-    },
-  };
 
   try {
     const response = await fetch(url, options);
@@ -142,14 +142,6 @@ async function displayData(coins, snapshot = false) {
 
 async function getLastInRank() {
   const url = `https://coinranking1.p.rapidapi.com/coins?referenceCurrencyUuid=yhjMzLPhuIDl&timePeriod=24h&tiers%5B0%5D=1&orderBy=marketCap&orderDirection=asc&limit=1&offset=0`;
-
-  const options = {
-    method: 'GET',
-    headers: {
-      'X-RapidAPI-Key': '92cafd2032msh75252a91a66893ap1128bdjsn75fcdc8c70ba',
-      'X-RapidAPI-Host': 'coinranking1.p.rapidapi.com',
-    },
-  };
 
   try {
     const response = await fetch(url, options);
@@ -279,13 +271,6 @@ document.getElementById('display-button').addEventListener('click', function (e)
 
 async function getDayData(id) {
   const url = `https://coinranking1.p.rapidapi.com/coin/${id}/history?referenceCurrencyUuid=yhjMzLPhuIDl&timePeriod=24h`;
-  const options = {
-    method: 'GET',
-    headers: {
-      'X-RapidAPI-Key': 'bff29b6aa4mshf22a75bb5624f31p152c89jsn427a95e2562d',
-      'X-RapidAPI-Host': 'coinranking1.p.rapidapi.com',
-    },
-  };
 
   try {
     const response = await fetch(url, options);
