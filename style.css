@@ -7,6 +7,33 @@ body {
   color: #fff;
 }
 
+nav {
+  background-color: #1e2021;
+  width: 70%;
+  margin: auto;
+  padding: 10px;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+nav button {
+  margin: 0 15px; /* Increased button margin for better spacing */
+  padding: 8px 30px; /* Increased padding for a more comfortable button size */
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  background: #534d81;
+  color: #fff;
+  transition: all 300ms;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+nav button:hover {
+  background: #958cdd;
+}
+
 #coinsTable img {
   width: 25px;
   height: 25px;
@@ -114,7 +141,7 @@ tr {
   background: #1e2021;
 }
 
-tr:nth-child(odd) td {
+tr:nth-child(odd):not(.expanded-info) td {
   background: rgb(26, 28, 29);
 }
 
@@ -130,48 +157,28 @@ tr:last-of-type td:last-child {
   box-shadow: inset -1px -1px 0 rgb(26, 28, 29);
 }
 
-tbody img {
-  transition: all 300ms;
+tbody:hover td:not(.clicked td, .info-graph) {
+  filter: blur(0.7px);
 }
 
-tbody:hover td {
-  color: transparent;
-  text-shadow: 0 0 3px #636363;
-}
-
-tbody:hover img {
-  filter: blur(2px);
-}
-
-tbody:hover button {
+tbody:hover td button:not(.clicked button) {
   color: transparent;
   text-shadow: 0 0 3px #636363;
   box-shadow: 0 0 3px #636363;
 }
 
-tbody:hover tr:hover td {
-  color: inherit;
-  text-shadow: rgb(24, 26, 27) 1px 0px 0px;
-}
-
-tbody:hover tr:hover img {
-  filter: unset;
-}
-
-tbody:hover tr:hover button {
+tbody:hover tr:hover td button {
   color: inherit;
   text-shadow: rgb(24, 26, 27) 1px 0px 0px;
   box-shadow: 0 0 0 3px #958cdd inset;
 }
 
-tbody:hover tr:hover .textGreen {
-  color: rgb(107, 199, 107);
-  text-shadow: rgb(24, 26, 27) 1px 0px 0px;
+tbody:hover tr:hover td {
+  filter: unset;
 }
 
-tbody:hover tr:hover .textRed {
-  color: rgb(212, 97, 97);
-  text-shadow: rgb(24, 26, 27) 1px 0px 0px;
+.expanded-info {
+  display: none;
 }
 
 .textGreen {
