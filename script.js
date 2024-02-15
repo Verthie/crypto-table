@@ -47,10 +47,6 @@ function setColor(change) {
 }
 
 async function displayData(coins, snapshot = false) {
-  //const coins = result.data.coins;
-
-  // console.log(coins);
-
   const mainDivElement = document.getElementById('main');
 
   mainDivElement.innerHTML = `
@@ -349,18 +345,3 @@ function convertToRelativeHours(timestamps) {
 
   return relativeHoursArray;
 }
-
-/*
-//todo
-- [x] style improvement
-- [x] sorting functionallity by clicking on headers (ascending and descending)
-- [] graph creation by using chart.js for generation -> using get 24h coin price and placing timestamps in the x-axis and the price in y-axis
-- [!] localStorage
-  - [x] initial create -> current snapshot of coins
-  - [x] create snapshot -> saving a snapshot of coins data
-  - [x] display snapshot -> displaying saved snapshot of coins data
-- [x] prompt -> allows setting the limit of coins shown in the list when clicked on a button (maybe on the navbar)
-- [x] alert -> when creating and displaying snapshots
-- [x] html5 -> navbar and footnote
-- [x] pagination -> by using offset and division by the limit of rows in table (for automatic scalable pagination - check the rank number of the last item in table)
-*/
