@@ -65,10 +65,6 @@ async function displayData(coins, snapshot = false) {
         </table>
     `;
 
-  document.querySelector('.rank-button').addEventListener('click', (e) => tableSort(e, 'marketCap'));
-  document.querySelector('.price-button').addEventListener('click', (e) => tableSort(e, 'price'));
-  document.querySelector('.change-button').addEventListener('click', (e) => tableSort(e, 'change'));
-
   document.getElementById('back-button').addEventListener('click', function (e) {
     e.preventDefault();
     document.getElementById('back-button').style.display = 'none';
@@ -84,6 +80,14 @@ async function displayData(coins, snapshot = false) {
     document.getElementById('create-button').style.display = 'none';
     document.getElementById('display-button').style.display = 'none';
     document.getElementById('limit-button').style.display = 'none';
+
+    document.querySelector('.rank-button').removeEventListener('click', (e) => tableSort(e, 'marketCap'));
+    document.querySelector('.price-button').removeEventListener('click', (e) => tableSort(e, 'price'));
+    document.querySelector('.change-button').removeEventListener('click', (e) => tableSort(e, 'change'));
+  } else {
+    document.querySelector('.rank-button').addEventListener('click', (e) => tableSort(e, 'marketCap'));
+    document.querySelector('.price-button').addEventListener('click', (e) => tableSort(e, 'price'));
+    document.querySelector('.change-button').addEventListener('click', (e) => tableSort(e, 'change'));
   }
 
   const coinsDataElement = document.getElementById('coinsData');
@@ -106,7 +110,7 @@ async function displayData(coins, snapshot = false) {
         `;
   });
 
-  const table = document.getElementById('coinsTable');
+  // const table = document.getElementById('coinsTable');
   const tableRows = document.querySelectorAll('.expandable-info');
 
   tableRows.forEach(function (row) {
@@ -115,8 +119,13 @@ async function displayData(coins, snapshot = false) {
     row.addEventListener('click', function () {
       if (!row.classList.contains('clicked')) {
         row.classList.add('clicked');
-        graph.innerHTML = `<td class="info-graph" colspan="4">Expandable Information</td>`;
+        graph.innerHTML = `
+        <td class="info-graph" colspan="4">
+          <canvas id="chart-${row.id}" style="width:100%;max-width:700px;margin:auto"></canvas>
+        </td>`;
         graph.style.display = 'table-row';
+        getDayData(`${row.id}`);
+        // generateChart(`chart-${row.id}`);
       } else {
         row.classList.remove('clicked');
         graph.style.display = 'none';
@@ -124,13 +133,15 @@ async function displayData(coins, snapshot = false) {
     });
   });
 
+  /* 
   table.addEventListener('mouseleave', function () {
     tableRows.forEach(function (row) {
       const rowId = row.id;
       document.getElementById(`graph-${rowId}`).style.display = 'none';
       row.classList.remove('clicked');
     });
-  });
+  }); 
+  */
 }
 
 async function getLastInRank() {
@@ -223,27 +234,6 @@ function changeLimit() {
   getLastInRank();
 }
 
-document.getElementById('limit-button').addEventListener('click', function (e) {
-  e.preventDefault();
-  changeLimit();
-});
-
-document.getElementById('create-button').addEventListener('click', function (e) {
-  e.preventDefault();
-  try {
-    snapshot = localStorage.getItem('coinsData');
-    alert('Snapshot created successfully!');
-  } catch (error) {
-    console.error(error);
-  }
-});
-
-document.getElementById('display-button').addEventListener('click', function (e) {
-  e.preventDefault();
-  alert("Remember that snapshots don't have built-in functions such as sorting");
-  displaySnapshot();
-});
-
 async function displaySnapshot() {
   try {
     const coinsData = JSON.parse(snapshot);
@@ -263,6 +253,101 @@ function removeElements() {
   });
 
   document.getElementById('table-navigation').style.display = 'none';
+}
+
+document.getElementById('limit-button').addEventListener('click', function (e) {
+  e.preventDefault();
+  changeLimit();
+});
+
+let snapshotCreated;
+document.getElementById('create-button').addEventListener('click', function (e) {
+  e.preventDefault();
+  try {
+    snapshot = localStorage.getItem('coinsData');
+    alert('Snapshot created successfully!');
+    snapshotCreated = true;
+  } catch (error) {
+    alert("Snapshot wasn't created :(");
+  }
+});
+
+document.getElementById('display-button').addEventListener('click', function (e) {
+  e.preventDefault();
+  if (snapshotCreated) {
+    displaySnapshot();
+  } else {
+    console.error(error);
+  }
+});
+
+async function getDayData(id) {
+  const url = `https://coinranking1.p.rapidapi.com/coin/${id}/history?referenceCurrencyUuid=yhjMzLPhuIDl&timePeriod=24h`;
+  const options = {
+    method: 'GET',
+    headers: {
+      'X-RapidAPI-Key': 'bff29b6aa4mshf22a75bb5624f31p152c89jsn427a95e2562d',
+      'X-RapidAPI-Host': 'coinranking1.p.rapidapi.com',
+    },
+  };
+
+  try {
+    const response = await fetch(url, options);
+    const result = await response.json();
+    const coinData = result.data.history;
+    console.log(coinData);
+    generateChart(id, coinData);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+// Chart creation
+function generateChart(id, data) {
+  const prices = [];
+  const timestamps = [];
+
+  for (let i = data.length - 1; i >= 0; i -= 24) {
+    prices.push(data[i].price);
+    timestamps.push(data[i].timestamp);
+  }
+
+  const relativeHours = convertToRelativeHours(timestamps);
+
+  console.log('Prices:', prices);
+  console.log('Timestamps:', timestamps);
+  console.log('Relative hours:', relativeHours);
+
+  new Chart(`chart-${id}`, {
+    type: 'line',
+    data: {
+      labels: relativeHours,
+      datasets: [
+        {
+          data: prices, // currency value
+          borderColor: '#958cdd',
+          fill: false,
+        },
+      ],
+    },
+    options: {
+      legend: { display: false },
+    },
+  });
+}
+
+function convertToRelativeHours(timestamps) {
+  const currentTimestamp = Math.floor(Date.now() / 1000); // Aktualny timestamp w sekundach
+  const relativeHoursArray = [];
+
+  for (const timestamp of timestamps) {
+    const timeDifferenceInSeconds = currentTimestamp - timestamp;
+    const relativeHours = Math.floor(timeDifferenceInSeconds / 3600); // 3600 sekund w godzinie
+
+    relativeHoursArray.push(`${relativeHours}h`);
+  }
+
+  return relativeHoursArray;
 }
 
 /*
