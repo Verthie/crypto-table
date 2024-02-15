@@ -17,8 +17,8 @@ nav {
 }
 
 nav button {
-  margin: 0 15px; /* Increased button margin for better spacing */
-  padding: 8px 30px; /* Increased padding for a more comfortable button size */
+  margin: 0 15px;
+  padding: 8px 30px;
   font-size: 16px;
   font-weight: bold;
   border: none;
